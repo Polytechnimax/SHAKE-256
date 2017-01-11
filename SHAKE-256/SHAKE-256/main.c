@@ -7,9 +7,22 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
+#include "Steps.h"
+#include <time.h>
+#include "Tests.h"
 
 int main(int argc, const char * argv[]) {
-	// insert code here...
-	printf("Hello, World!\n");
-    return 0;
+	
+	test_all_zero();
+	//test_place_ones();
+	
+	//printf("Long size: %lu\n", sizeof(unsigned long));
+	
+	return 0;
 }
+
+
+
+
+
