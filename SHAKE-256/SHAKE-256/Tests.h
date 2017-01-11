@@ -15,3 +15,5 @@
 
 void test_all_zero();
 void test_place_ones();
+void test_padding();
+void test_SHAKE();

@@ -39,3 +39,44 @@ void test_place_ones() {
 	printf("After changing one bit: \n");
 	print_as_sheets(all_zero, w);
 }
+
+void print_string(char *M, int nbits) {
+	int i;
+	for(i=0;i<nbits; i++) {
+		printf("%d", (M[i/8] >> (7- (i%8))) & 1);
+		if(!((i+1)%8))
+			printf(" ");
+	}
+}
+
+void test_padding() {
+	char N[200];
+	int i;
+	for(i=0; i<200; i++) {
+		N[i] = 0;
+	}
+	int s = 8;
+	N[0] = 167;
+	
+	printf("N:\n");
+	print_as_hexa_string(N, s);
+	
+	int n = 0;
+	char* M = pad_message(N, s, &n);
+	printf("\n\nM:\n");
+	print_as_hexa_string(M, n);
+	printf("\n");
+}
+
+void test_SHAKE() {
+	char N[204];
+	int i;
+	for(i=0; i<204; i++) {
+		N[i] = 0xa3;
+	}
+	
+	char* digest = SHAKE_256(N, 1630, ~(1 << 31));
+	
+	printf("\n\n");
+	print_as_hexa_string(digest, 1024);
+}

@@ -174,7 +174,7 @@ char* iota(char* S, int ir, int w) {
 		RC |= (((unsigned long)rc(j+7*ir)) << ((1 << j) - 1));
 	}
 	
-	printf("RC=%lx\n", RC);
+	//printf("RC=%lx\n", RC);
 	
 	for(k=0; k<w; k++) {
 		SET_ARRAY_ELEMENTAT(Sprime, 0, 0, k, w, (GET_ARRAY_ELEMENTAT(Sprime, 0, 0, k, w) ^ ((RC >> k) & 1)));
@@ -188,25 +188,25 @@ char* iota(char* S, int ir, int w) {
  */
 char* Rnd(char* S, int ir, int w) {
 	char* S1 = theta(S, w);
-	printf("After theta: \n");
-	print_as_sheets(S1, w);
+	//printf("After theta: \n");
+	//print_as_sheets(S1, w);
 	
 	char* S2 = rho(S1, w);
-	printf("After rho: \n");
-	print_as_sheets(S2, w);
+	//printf("After rho: \n");
+	//print_as_sheets(S2, w);
 
 	char* S3 = pi(S2, w);
-	printf("After pi: \n");
-	print_as_sheets(S3, w);
+	//printf("After pi: \n");
+	//print_as_sheets(S3, w);
 
 	char* S4 = chi(S3, w);
-	printf("After chi: \n");
-	print_as_sheets(S4, w);
+	//printf("After chi: \n");
+	//print_as_sheets(S4, w);
 
 	char* S5 = iota(S4, ir, w);
-	printf("After iota: \n");
-	print_as_sheets(S5, w);
-	printf("\n");
+	//printf("After iota: \n");
+	//print_as_sheets(S5, w);
+	//printf("\n");
 
 	free(S1);
 	free(S2);
@@ -228,9 +228,9 @@ char* Keccac_p(int b, int nr, char* S) {
 	int ir, i=0;
 	for(ir=12+2*l - nr; ir<12+2*l; ir++) {
 		
-		printf("--- Round %d ---\n\n", i);
+		//printf("--- Round %d ---\n\n", i);
 		S2 = Rnd(S1, ir, w);
-		free(S1);
+		//free(S1);
 		S1 = S2;
 		i++;
 	}
@@ -245,12 +245,15 @@ char* SHAKE_256(char* N, int nbits, int d) {
 	char* P = pad_message(N, nbits, &n);
 	char* S = all_zero();
 	
+	n /= 1088;
+	
 	int i;
 	for(i=0; i<n; i++) {
 		Pad = pad_with_0(P + (i*1088/8));
 		Xor = XOR(S, Pad);
 		free(Pad);
 		free(S);
+		//print_as_hexa_string(Xor, b);
 		S = Keccac_p(b, 24, Xor);
 		free(Xor);
 	}
@@ -260,7 +263,11 @@ char* SHAKE_256(char* N, int nbits, int d) {
 	
 	Z = malloc(1);
 	
+	i=0;
 	while (zbits < d) {
+		printf("--- Round %d ---\n", i);
+		print_as_hexa_string(S, b);
+		printf("\n\n");
 		Ztemp = construct_digest(Z, S, &zbits);
 		free(Z);
 		Z = Ztemp;
@@ -268,6 +275,7 @@ char* SHAKE_256(char* N, int nbits, int d) {
 		Stemp = S;
 		S = Keccac_p(b, 24, Stemp);
 		free(Stemp);
+		i++;
 	}
 	
 	Ztemp = trunc_at(Z, d);
@@ -280,12 +288,13 @@ char* SHAKE_256(char* N, int nbits, int d) {
 char* pad_message(char* N, int nbits, int *n) {
 	int r = 1088;
 	
-	int j = (-nbits-2) % r;
+	// We have an extra -4 because SHAKE-256 requires 1111 added at the end
+	int j = (-nbits-6) % r;
 	while (j<0) 
 		j+=r;
 	j%=r;
 	
-	int tot_bits = nbits+j+2;
+	int tot_bits = nbits+j+6;
 	
 	char* P = malloc(tot_bits/8);
 	
@@ -296,9 +305,13 @@ char* pad_message(char* N, int nbits, int *n) {
 	for(i=ROUNDUP8(nbits); i<tot_bits/8; i++) {
 		P[i] = 0;
 	}
-	P[ROUNDUP8(nbits)-1] &= 255 << (8 - (nbits%8));
-	P[tot_bits/8 - ROUNDUP8(j+2)] |= 1 << ((j+1)%8);
-	P[tot_bits/8 - 1] |= 1;
+	P[ROUNDUP8(nbits)-1] &= ~(255 << (((nbits+7)%8) + 1));
+	P[tot_bits/8 - ROUNDUP8(j+6)] |= 1 << (7-(j+5)%8);
+	P[tot_bits/8 - ROUNDUP8(j+5)] |= 1 << (7-(j+4)%8);
+	P[tot_bits/8 - ROUNDUP8(j+4)] |= 1 << (7-(j+3)%8);
+	P[tot_bits/8 - ROUNDUP8(j+3)] |= 1 << (7-(j+2)%8);
+	P[tot_bits/8 - ROUNDUP8(j+2)] |= 1 << (7-(j+1)%8);
+	P[tot_bits/8 - 1] |= 1 << 7;
 	
 	*n = tot_bits;
 
@@ -418,12 +431,12 @@ void print_as_sheets(char* S, int w) {
 		printf("\n");
 	}
 }
-void print_as_hexa_string(char* S, int w) {
+void print_as_hexa_string(char* S, int nbits) {
 	int i;
-	for(i=0; i<25*w/8; i++) {
+	for(i=0; i<ROUNDUP8(nbits); i++) {
 		if(!(S[i] & (15 << 4)))
 			printf("0");
-		printf("%x", (S[i] & 255));
+		printf("%x ", (S[i] & 255));
 	}
 }
 

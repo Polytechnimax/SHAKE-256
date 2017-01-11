@@ -14,10 +14,14 @@
 
 int main(int argc, const char * argv[]) {
 	
-	test_all_zero();
+	//test_all_zero();
 	//test_place_ones();
+	//test_padding();
+	//test_SHAKE();
 	
-	//printf("Long size: %lu\n", sizeof(unsigned long));
+	//printf("ROUNDUP8(2)=%d\n", ((2+7) >> 3));
+	
+	printf("Hello world!\n");
 	
 	return 0;
 }

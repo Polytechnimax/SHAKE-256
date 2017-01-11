@@ -35,4 +35,5 @@ void print_as_array(char* S, int w);
 void compare_as_array(char* S, char* Sprime, int w);
 // Only works if w>=8
 void print_as_sheets(char* S, int w);
+void print_as_hexa_string(char* S, int nbits);
 
