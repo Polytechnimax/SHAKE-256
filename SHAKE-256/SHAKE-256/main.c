@@ -17,11 +17,12 @@ int main(int argc, const char * argv[]) {
 	//test_all_zero();
 	//test_place_ones();
 	//test_padding();
-	//test_SHAKE();
+	test_SHAKE();
+	printf("\n");
 	
 	//printf("ROUNDUP8(2)=%d\n", ((2+7) >> 3));
 	
-	printf("Hello world!\n");
+	//printf("Hello world!\n");
 	
 	return 0;
 }

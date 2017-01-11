@@ -75,8 +75,8 @@ void test_SHAKE() {
 		N[i] = 0xa3;
 	}
 	
-	char* digest = SHAKE_256(N, 1630, ~(1 << 31));
+	char* digest = SHAKE_256(N, 1630, 1024);
 	
-	printf("\n\n");
+	//printf("\n\n");
 	print_as_hexa_string(digest, 1024);
 }

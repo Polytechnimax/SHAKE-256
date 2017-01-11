@@ -265,9 +265,9 @@ char* SHAKE_256(char* N, int nbits, int d) {
 	
 	i=0;
 	while (zbits < d) {
-		printf("--- Round %d ---\n", i);
-		print_as_hexa_string(S, b);
-		printf("\n\n");
+		//printf("--- Round %d ---\n", i);
+		//print_as_hexa_string(S, b);
+		//printf("\n\n");
 		Ztemp = construct_digest(Z, S, &zbits);
 		free(Z);
 		Z = Ztemp;
