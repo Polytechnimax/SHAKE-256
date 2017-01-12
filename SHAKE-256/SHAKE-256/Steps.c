@@ -265,9 +265,9 @@ char* SHAKE_256(char* N, int nbits, int d) {
 	
 	i=0;
 	while (zbits < d) {
-		//printf("--- Round %d ---\n", i);
-		//print_as_hexa_string(S, b);
-		//printf("\n\n");
+		/*printf("--- Round %d ---\n", i);
+		print_as_hexa_string(S, b);
+		printf("\n\n");*/
 		Ztemp = construct_digest(Z, S, &zbits);
 		free(Z);
 		Z = Ztemp;
@@ -350,15 +350,16 @@ char* all_zero() {
 	return S;
 }
 char* construct_digest(char* Z, char* S, int* zbits) {
+	
 	*zbits += 1088;
-	char* Z2 = malloc(*zbits);
+	char* Z2 = malloc(*zbits/8);
 	
 	int i;
-	for(i=0; i<*zbits-1088; i++) {
+	for(i=0; i<(*zbits-1088)/8; i++) {
 		Z2[i] = Z[i];
 	}
-	for(i=0; i<1088; i++) {
-		Z2[*zbits-1088+i] = S[i];
+	for(i=0; i<1088/8; i++) {
+		Z2[(*zbits-1088)/8+i] = S[i];
 	}
 	
 	return Z2;
