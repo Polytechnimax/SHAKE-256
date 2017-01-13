@@ -59,12 +59,12 @@ void test_padding() {
 	N[0] = 167;
 	
 	printf("N:\n");
-	print_as_hexa_string(N, s);
+	print_as_hexa_string(N, s, 0);
 	
 	int n = 0;
 	char* M = pad_message(N, s, &n);
 	printf("\n\nM:\n");
-	print_as_hexa_string(M, n);
+	print_as_hexa_string(M, n, 0);
 	printf("\n");
 }
 
@@ -78,5 +78,5 @@ void test_SHAKE() {
 	char* digest = SHAKE_256(N, 1630, 1024);
 	
 	//printf("\n\n");
-	print_as_hexa_string(digest, 1024);
+	print_as_hexa_string(digest, 1024, 0);
 }

@@ -163,10 +163,10 @@ int main(int argc, char * argv[]) {
 		if(n<0)
 			n = count;
 		M = get_hex_msg(file, n);
-		printf(ANSI_COLOR_GREEN "Count: %d\n", count);
+		/*printf(ANSI_COLOR_GREEN "Count: %d\n", count);
 		printf("Message:\n");
 		print_as_hexa_string(M, n);
-		printf("\n");
+		printf("\n");*/
 	} else if (b){
 		count = count_non_hex(file);
 		count /=8;
@@ -177,10 +177,10 @@ int main(int argc, char * argv[]) {
 		if(n<0)
 			n = count;
 		M = get_bin_msg(file, n);
-		printf(ANSI_COLOR_GREEN "Count: %d\n", count);
+		/*printf(ANSI_COLOR_GREEN "Count: %d\n", count);
 		printf("Message:\n");
 		print_as_hexa_string(M, n);
-		printf("\n");
+		printf("\n");*/
  	} else {
 		count = count_non_hex(file);
 		if(n>count) {
@@ -190,16 +190,16 @@ int main(int argc, char * argv[]) {
 		if(n<0)
 			n = count;
 		M = get_non_hex_msg(file, n);
-		printf(ANSI_COLOR_GREEN "Count: %d\n", count);
+		/*printf(ANSI_COLOR_GREEN "Count: %d\n", count);
 		printf("Count: %d\n", count);
 		printf("Message:\n");
 		print_as_hexa_string(M, n);
-		printf("\n");
+		printf("\n");*/
 	}
 	
 	printf(ANSI_COLOR_RESET);
 	D = SHAKE_256(M, n, d);
-	print_as_hexa_string(D, d);
+	print_as_hexa_string(D, d, 0);
 	printf("\n");
 	free(D);
 	free(M);

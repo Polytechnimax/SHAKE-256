@@ -432,12 +432,15 @@ void print_as_sheets(char* S, int w) {
 		printf("\n");
 	}
 }
-void print_as_hexa_string(char* S, int nbits) {
+void print_as_hexa_string(char* S, int nbits, int space) {
 	int i;
 	for(i=0; i<ROUNDUP8(nbits); i++) {
 		if(!(S[i] & (15 << 4)))
 			printf("0");
-		printf("%x ", (S[i] & 255));
+		printf("%x", (S[i] & 255));
+		if (space) {
+			printf(" ");
+		}
 	}
 }
 
