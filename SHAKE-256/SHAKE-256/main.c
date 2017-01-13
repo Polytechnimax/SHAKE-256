@@ -139,6 +139,60 @@ char* get_bin_msg(FILE* file, int n) {
 	
 }
 
+void compute_hash(int x, int b, int n, int d, FILE *file) {
+	int count;
+	char *M, *D;
+	if(x) {
+		count = count_hex(file);
+		if(n>count) {
+			printf(ANSI_COLOR_RED "File too short for required message length!\n" ANSI_COLOR_RESET);
+			exit(1);
+		}
+		if(n<0)
+			n = count;
+		M = get_hex_msg(file, n);
+		/*printf(ANSI_COLOR_GREEN "Count: %d\n", count);
+		 printf("Message:\n");
+		 print_as_hexa_string(M, n);
+		 printf("\n");*/
+	} else if (b){
+		count = count_non_hex(file);
+		count /=8;
+		if(n>count) {
+			printf(ANSI_COLOR_RED "File too short for required message length!\n" ANSI_COLOR_RESET);
+			exit(1);
+		}
+		if(n<0)
+			n = count;
+		M = get_bin_msg(file, n);
+		/*printf(ANSI_COLOR_GREEN "Count: %d\n", count);
+		 printf("Message:\n");
+		 print_as_hexa_string(M, n);
+		 printf("\n");*/
+	} else {
+		count = count_non_hex(file);
+		if(n>count) {
+			printf(ANSI_COLOR_RED "File too short for required message length!\n" ANSI_COLOR_RESET);
+			exit(1);
+		}
+		if(n<0)
+			n = count;
+		M = get_non_hex_msg(file, n);
+		/*printf(ANSI_COLOR_GREEN "Count: %d\n", count);
+		 printf("Count: %d\n", count);
+		 printf("Message:\n");
+		 print_as_hexa_string(M, n);
+		 printf("\n");*/
+	}
+	
+	printf(ANSI_COLOR_RESET);
+	D = SHAKE_256(M, n, d);
+	print_as_hexa_string(D, d, 0);
+	printf("\n");
+	free(D);
+	free(M);
+}
+
 int main(int argc, char * argv[]) {
 	
 	int d, x, n, b;
@@ -152,57 +206,8 @@ int main(int argc, char * argv[]) {
 		exit(2);
 	}
 	
-	int count;
-	char *M, *D;
-	if(x) {
-		count = count_hex(file);
-		if(n>count) {
-			printf(ANSI_COLOR_RED "File too short for required message length!\n" ANSI_COLOR_RESET);
-			exit(1);
-		}
-		if(n<0)
-			n = count;
-		M = get_hex_msg(file, n);
-		/*printf(ANSI_COLOR_GREEN "Count: %d\n", count);
-		printf("Message:\n");
-		print_as_hexa_string(M, n);
-		printf("\n");*/
-	} else if (b){
-		count = count_non_hex(file);
-		count /=8;
-		if(n>count) {
-			printf(ANSI_COLOR_RED "File too short for required message length!\n" ANSI_COLOR_RESET);
-			exit(1);
-		}
-		if(n<0)
-			n = count;
-		M = get_bin_msg(file, n);
-		/*printf(ANSI_COLOR_GREEN "Count: %d\n", count);
-		printf("Message:\n");
-		print_as_hexa_string(M, n);
-		printf("\n");*/
- 	} else {
-		count = count_non_hex(file);
-		if(n>count) {
-			printf(ANSI_COLOR_RED "File too short for required message length!\n" ANSI_COLOR_RESET);
-			exit(1);
-		}
-		if(n<0)
-			n = count;
-		M = get_non_hex_msg(file, n);
-		/*printf(ANSI_COLOR_GREEN "Count: %d\n", count);
-		printf("Count: %d\n", count);
-		printf("Message:\n");
-		print_as_hexa_string(M, n);
-		printf("\n");*/
-	}
+	compute_hash(x, b, n, d, file);
 	
-	printf(ANSI_COLOR_RESET);
-	D = SHAKE_256(M, n, d);
-	print_as_hexa_string(D, d, 0);
-	printf("\n");
-	free(D);
-	free(M);
 	fclose(file);
 	return 0;
 }

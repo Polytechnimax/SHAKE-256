@@ -6,35 +6,7 @@
 //  Copyright © 2017 LARCHER Maxime. All rights reserved.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "Steps.h"
-
-#define CHARSIZE (sizeof(char) * 8)
-#define ALIGNON8(w) ((5*w+7) & (~7))
-#define UPPER8MULTIPLE(x) ((x+7) & (~7))
-#define ROUNDUP8(x) ((x+7) >> 3)
-/*
- * How does this code work?
- * Instead of transforming the string S in an array we work directly on the string. The following macros help 
- * access the elements as if it was a state array.
- */
-
-#define GET_STRING_BITINDEX(x,y,z,w) (w*(5*y+x) + z)
-#define GET_STRING_CHARINDEX(x,y,z,w) (GET_STRING_BITINDEX(x,y,z,w) / CHARSIZE)
-#define GET_STRING_BITINDEXINCHAR(x,y,z,w) ((GET_STRING_BITINDEX(x,y,z,w) % CHARSIZE))
-//#define GET_STRING_BITINDEXINCHAR(x,y,z,w) (7 - (GET_STRING_BITINDEX(x,y,z,w) % CHARSIZE))
-#define GET_ARRAY_ELEMENTAT(S,x,y,z,w) ((S[GET_STRING_CHARINDEX(x,y,z,w)] >> (GET_STRING_BITINDEXINCHAR(x,y,z,w))) & 1)
-
-#define SET_ARRAY_ELEMENTAT(S,x,y,z,w,b) (S[GET_STRING_CHARINDEX(x,y,z,w)] \
-										= ((~b+1) & (S[GET_STRING_CHARINDEX(x,y,z,w)] | (1 << GET_STRING_BITINDEXINCHAR(x,y,z,w)))) \
-										| ((~(~b+1)) & (S[GET_STRING_CHARINDEX(x,y,z,w)] & ~(1 << GET_STRING_BITINDEXINCHAR(x,y,z,w)))))
-
-#define GET_THETATEMP_BITAT(C,x,z) ((C[(w*x + z) / 8] >> ((w*x + z) % 8)) & 1)
-#define SET_THETATEMP_BITAT(C,x,z,b) (C[(w*x + z) / 8] \
-										= ((~b+1) & ((C[(w*x + z) / 8]) | (1 << ((w*x + z) % 8)))) \
-										| ((~(~b+1)) & ((C[(w*x + z) / 8] & (~(1 << ((w*x + z) % 8)))))))
 
 /*
  * Theta, rho, pi, chi and iota are the steps used in Keccac_p
