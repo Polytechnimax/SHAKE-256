@@ -60,3 +60,5 @@ void compare_as_array(char* S, char* Sprime, int w);
 void print_as_sheets(char* S, int w);
 void print_as_hexa_string(char* S, int nbits, int space);
 
+
+void unalloc(char** ptr);

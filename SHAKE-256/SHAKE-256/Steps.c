@@ -14,16 +14,9 @@
  * Since it is impossible to guess the size of a string in C, the size must be specified (w = b/25).
  */
 char* theta(char* S, int w) {
-	
-	char *C,*D,*Sprime;
-	C = malloc(ROUNDUP8(5*w));
-	D = malloc(ROUNDUP8(5*w));
-	Sprime = malloc(ROUNDUP8(25*w));
-	
+	char *Sprime = malloc(ROUNDUP8(25*w));
 	int i, j, k;
-	
 	int C1[5][64], D1[5][64];
-	
 	
 	// Fill C
 	for(i=0; i<5; i++) {
@@ -32,7 +25,6 @@ char* theta(char* S, int w) {
 			for (j=0; j<5; j++) {
 				c ^= GET_ARRAY_ELEMENTAT(S, i, j, k, w);
 			}
-			SET_THETATEMP_BITAT(C, i, k, c);
 			C1[i][k] = c;
 		}
 	}
@@ -40,9 +32,7 @@ char* theta(char* S, int w) {
 	// Fill D
 	for(i=0; i<5; i++) {
 		for(k=0; k<w; k++) {
-			char c = GET_THETATEMP_BITAT(C, (i+4)%5, k) ^ GET_THETATEMP_BITAT(C, (i+1) % 5, (k+w-1)%w);
 			D1[i][k] = C1[(i+4)%5][k] ^ C1[(i+1)%5][(k-1+w)%w];
-			SET_THETATEMP_BITAT(D, i, k, c);
 		}
 	}
 	
@@ -50,15 +40,11 @@ char* theta(char* S, int w) {
 	for(i=0; i<5; i++) {
 		for(j=0; j<5; j++) {
 			for(k=0; k<w; k++) {
-				//char b = GET_THETATEMP_BITAT(D, i, k) ^ GET_ARRAY_ELEMENTAT(S, i, j, k, w);
 				char b = D1[i][k] ^ GET_ARRAY_ELEMENTAT(S, i, j, k, w);
 				SET_ARRAY_ELEMENTAT(Sprime, i, j, k, w, b);
 			}
 		}
 	}
-	
-	free(C);
-	free(D);
 	
 	return Sprime;
 	
@@ -180,17 +166,21 @@ char* Rnd(char* S, int ir, int w) {
 	//print_as_sheets(S5, w);
 	//printf("\n");
 
-	free(S1);
+	unalloc(&S4);
+	unalloc(&S3);
+	unalloc(&S2);
+	unalloc(&S1);
+	/*free(S1);
 	free(S2);
 	free(S3);
-	free(S4);
+	free(S4);*/
 	
 	return S5;
 }
 
 char* Keccac_p(int b, int nr, char* S) {
 	int l, w=b/25;
-	for(l=0;1<<l < w; l++) {
+	for(l=0; 1<<l < w; l++) {
 		
 	}
 	
@@ -199,10 +189,7 @@ char* Keccac_p(int b, int nr, char* S) {
 	
 	int ir, i=0;
 	for(ir=12+2*l - nr; ir<12+2*l; ir++) {
-		
-		//printf("--- Round %d ---\n\n", i);
 		S2 = Rnd(S1, ir, w);
-		//free(S1);
 		S1 = S2;
 		i++;
 	}
@@ -223,11 +210,13 @@ char* SHAKE_256(char* N, int nbits, int d) {
 	for(i=0; i<n; i++) {
 		Pad = pad_with_0(P + (i*1088/8));
 		Xor = XOR(S, Pad);
-		free(Pad);
-		free(S);
-		//print_as_hexa_string(Xor, b);
+		unalloc(&Pad);
+		unalloc(&S);
+		//free(Pad);
+		//free(S);
 		S = Keccac_p(b, 24, Xor);
-		free(Xor);
+		//free(Xor);
+		unalloc(&Xor);
 	}
 	
 	char *Z, *Ztemp, *Stemp;
@@ -237,22 +226,27 @@ char* SHAKE_256(char* N, int nbits, int d) {
 	
 	i=0;
 	while (zbits < d) {
-		/*printf("--- Round %d ---\n", i);
-		print_as_hexa_string(S, b);
-		printf("\n\n");*/
 		Ztemp = construct_digest(Z, S, &zbits);
-		free(Z);
+		//free(Z);
+		unalloc(&Z);
 		Z = Ztemp;
 		
 		Stemp = S;
 		S = Keccac_p(b, 24, Stemp);
-		free(Stemp);
+		unalloc(&Stemp);
+		//free(Stemp);
 		i++;
 	}
 	
 	Ztemp = trunc_at(Z, d);
-	free(Z);
+	//free(Z);
+	unalloc(&Z);
 	Z = Ztemp;
+	
+	unalloc(&S);
+	unalloc(&P);
+	//free(S);
+	//free(P);
 	
 	return Z;
 }
@@ -417,6 +411,11 @@ void print_as_hexa_string(char* S, int nbits, int space) {
 }
 
 
+
+void unalloc(char** ptr) {
+	free(*ptr);
+	*ptr = NULL;
+}
 
 
 

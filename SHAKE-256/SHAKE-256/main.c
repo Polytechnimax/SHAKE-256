@@ -28,15 +28,11 @@
 
 void print_usage() {
 	
-	printf(ANSI_COLOR_RED);
-	printf("usage: ./SHAKE256 [-b | -x] [-n <n>] (-f <file> | -s <string>) -d <d>\n  [-b | -x] The message is given in binary of hexadecimal. By default the message is considered readable text.\n  [-n <n>] The size (in bits) of the message.\n  -f <file> | -s <string> The file or the string to hash.\n  -d <d> The expected length (in bits) of the digest.\n\n");
+	printf(ANSI_COLOR_RED "usage: ./SHAKE256 [-b | -x] [-n <n>] (-f <file> | -s <string>) -d <d>\n  [-b | -x] The message is given in binary of hexadecimal. By default the message is considered readable text.\n  [-n <n>] The size (in bits) of the message.\n  -f <file> | -s <string> The file or the string to hash.\n  -d <d> The expected length (in bits) of the digest.\n\n");
 	
-	printf("other usage: ./SHAKE256 -g -n <nbits> -c <ncollisions>\n  -n <nbits> The number of bits expected.\n  -c <ncollisions>  The number of collisions expected.\n");
-	
-	printf(ANSI_COLOR_RESET);
-	
+	printf("other usage: ./SHAKE256 -g -n <nbits> -c <ncollisions> [-a]\n  -n <nbits> The number of bits expected.\n  -c <ncollisions>  The number of collisions expected.\n  [-a] Advanced mode, generated examples look like each other.\n" ANSI_COLOR_RESET);
 }
-void parse_args(int argc, char *argv[], char** file, int* d, int* x, int *b, int* n, int* c, int *g, char** str, int *isfile) {
+void parse_args(int argc, char *argv[], char** file, int* d, int* x, int *b, int* n, int* c, int *g, char** str, int *isfile, int *a) {
 	int option = 0;
 	int f = 0, s = 0;
 	*d = 0;
@@ -44,8 +40,9 @@ void parse_args(int argc, char *argv[], char** file, int* d, int* x, int *b, int
 	*b = 0;
 	*c = 0;
 	*g = 0;
+	*a = 0;
 	*n = -1;
-	while ((option = getopt(argc, argv,"f:s:d:n:c:xbg")) != -1) {
+	while ((option = getopt(argc, argv,"f:s:d:n:c:xbga")) != -1) {
 		switch (option) {
 			case 'f' : *file = malloc(strlen(optarg)); f = 1;
 				strcpy(*file, optarg);
@@ -60,6 +57,8 @@ void parse_args(int argc, char *argv[], char** file, int* d, int* x, int *b, int
 			case 'b' : *b = 1;
 				break;
 			case 'g' : *g = 1;
+				break;
+			case 'a' : *a = 1;
 				break;
 			case 'n' : *n = atoi(optarg);
 				break;
@@ -275,12 +274,32 @@ void compute_hash_from_string(int x, int b, int n, int d, char* s) {
 
 int main(int argc, char * argv[]) {
 	
-	int d, x, n, b, c, g, isfile;
+	build_lookalike_collisions("maxime.larcher@polytechnique.edu", 32, 24, 1);
+	//build_collisions(32, 1);
+	
+	/*char* test = malloc(5);
+	test[0] = 0;
+	test[1] = 0;
+	test[2] = 0;
+	test[3] = 0;
+	test[4] = 0;*/
+	
+	/*char *S = SHAKE_256("maxime.larcher@polytechnique.edu", 32*8, 32), *S2;
+	while(1) {
+		S2 = SHAKE_256(S, 32, 32);
+		free(S);
+		S = S2;
+	}*/
+	
+	/*int d, x, n, b, c, g, a, isfile;
 	char *f, *s;
-	parse_args(argc, argv, &f, &d, &x, &b, &n, &c, &g , &s, &isfile);
+	parse_args(argc, argv, &f, &d, &x, &b, &n, &c, &g , &s, &isfile, &a);
 	
 	if(g) {
-		build_collisions(n, c);
+		if(a)
+			build_lookalike_collisions("maxime.larcher@polytechnique.edu", 32, n, c);
+		else
+			build_collisions(n, c);
 	} else {
 		if(isfile) {
 			FILE *file = fopen(f, "r");
@@ -298,7 +317,7 @@ int main(int argc, char * argv[]) {
 			compute_hash_from_string(x, b, n, d, s);
 			free(s);
 		}
-	}
+	}*/
 	
 	
 	/*char *T = malloc(2), *T2 = malloc(2);
